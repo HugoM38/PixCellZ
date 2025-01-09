@@ -5,6 +5,8 @@ import 'package:pixcellz/ui/auth/login_viewmodel.dart';
 import 'package:pixcellz/ui/auth/signup_page.dart';
 import 'package:pixcellz/ui/auth/signup_viewmodel.dart';
 import 'package:pixcellz/ui/home/home_page.dart';
+import 'package:pixcellz/ui/pixcellz_creation/pixcellz_creation_page.dart';
+import 'package:pixcellz/ui/pixcellz_creation/pixel_art_viewmodel.dart';
 import 'package:pixcellz/utils/auth_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +16,7 @@ void main() {
       ChangeNotifierProvider(create: (context) => LoginViewModel()),
       ChangeNotifierProvider(create: (context) => AuthModel()),
       ChangeNotifierProvider(create: (context) => SignupViewModel()),
+      ChangeNotifierProvider(create: (context) => PixelArtViewModel()),
     ],
     child: const PixCellZ(),
   ));
@@ -30,6 +33,7 @@ class PixCellZ extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/home': (context) => const HomePage(),
+        '/pixcellz_creation': (context) => const PixCellZCreationPage(),
       },
       navigatorObservers: [AuthObserver()],
       theme: ThemeData(

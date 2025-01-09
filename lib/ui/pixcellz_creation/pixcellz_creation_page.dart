@@ -1,0 +1,264 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:pixcellz/ui/widgets/pixcellz_appbar.dart';
+import 'package:provider/provider.dart';
+import 'package:pixcellz/ui/pixcellz_creation/pixel_art_viewmodel.dart';
+import 'package:pixcellz/ui/widgets/pixel_grid.dart';
+
+class PixCellZCreationPage extends StatefulWidget {
+  const PixCellZCreationPage({super.key});
+
+  @override
+  State<PixCellZCreationPage> createState() => _PixCellZCreationPageState();
+}
+
+class _PixCellZCreationPageState extends State<PixCellZCreationPage> {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => PixelArtViewModel(),
+      child: Scaffold(
+        appBar: const PixCellZAppBar(
+          title: "Création d'un Pixel Art",
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              const Expanded(
+                child: Center(
+                  child: PixelGrid(),
+                ),
+              ),
+              Container(
+                height: 24,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                color: Colors.black87,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        'Appui Court: sélectionner | Appui Long: modifier/supprimer',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 50,
+                child: _buildColorPalette(),
+              ),
+              SizedBox(
+                height: 50,
+                child: _buildColorPickerButton(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorPalette() {
+    return Consumer<PixelArtViewModel>(
+      builder: (context, viewModel, child) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: viewModel.palette.length,
+                  itemBuilder: (context, index) {
+                    final color = viewModel.palette[index];
+                    final isSelected = viewModel.selectedColor == color;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: GestureDetector(
+                        onTap: () => viewModel.setSelectedColor(color),
+                        onLongPress: () =>
+                            _showColorEditor(context, viewModel, index, color),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: color,
+                            border: Border.all(
+                              color: isSelected ? Colors.white : Colors.black,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(22),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: IconButton(
+                  icon: const Icon(Icons.add_circle),
+                  onPressed: () => _showAddColorDialog(context, viewModel),
+                  tooltip: 'Ajouter une couleur',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showColorEditor(BuildContext context, PixelArtViewModel viewModel,
+      int index, Color initialColor) {
+    Color selectedColor = initialColor;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Modifier la couleur'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ColorPicker(
+                pickerColor: initialColor,
+                onColorChanged: (color) => selectedColor = color,
+                pickerAreaHeightPercent: 0.8,
+                enableAlpha: false,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      viewModel.removeColor(index);
+                      Navigator.of(context).pop();
+                    },
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    child: const Text('Supprimer'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      viewModel.updateColor(index, selectedColor);
+                      if (viewModel.selectedColor == initialColor) {
+                        viewModel.setSelectedColor(selectedColor);
+                      }
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Modifier'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAddColorDialog(BuildContext context, PixelArtViewModel viewModel) {
+    Color selectedColor = Colors.red;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Ajouter une couleur'),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: selectedColor,
+            onColorChanged: (color) => selectedColor = color,
+            pickerAreaHeightPercent: 0.8,
+            enableAlpha: false,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              viewModel.addColor(selectedColor);
+              Navigator.of(context).pop();
+            },
+            child: const Text('Ajouter'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildColorPickerButton() {
+    return Consumer<PixelArtViewModel>(
+      builder: (context, viewModel, child) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: SizedBox(
+            height: 44,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22),
+                ),
+              ),
+              onPressed: () => _showColorPicker(context, viewModel),
+              child: const Text(
+                'Couleur personnalisée',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showColorPicker(BuildContext context, PixelArtViewModel viewModel) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choisir une couleur'),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: viewModel.selectedColor,
+            onColorChanged: (color) => viewModel.setSelectedColor(color),
+            pickerAreaHeightPercent: 0.8,
+            enableAlpha: false,
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
+  }
+}

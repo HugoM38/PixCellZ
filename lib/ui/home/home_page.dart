@@ -11,8 +11,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
+    return Scaffold(
       appBar: const PixCellZAppBar(title: "PixCellZ"),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {Navigator.pushNamed(context, '/pixcellz_creation')},
+        child: const Icon(Icons.add),
+      ),
       body: Center(
         child: SizedBox(
           height: MediaQuery.of(context).size.height * 0.7,

@@ -15,7 +15,7 @@ class LoginViewModel extends ChangeNotifier {
   );
   
   final RegExp passwordRegex = RegExp(
-    r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$',
+    r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])[^\s]{8,}$',
   );
 
   String? emailError;
@@ -67,22 +67,22 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   void validatePassword() {
-    if (!isPasswordFieldTouched) return;
+  if (!isPasswordFieldTouched) return;
 
-    if (passwordController.text.isEmpty) {
-      passwordError = "Le mot de passe est requis";
-    } else if (!passwordRegex.hasMatch(passwordController.text)) {
-      passwordError = """Le mot de passe doit contenir :
+  if (passwordController.text.isEmpty) {
+    passwordError = "Le mot de passe est requis";
+  } else if (!passwordRegex.hasMatch(passwordController.text)) {
+    passwordError = """Le mot de passe doit contenir :
 - Au moins 8 caractères
 - Au moins une majuscule
 - Au moins une minuscule
 - Au moins un chiffre
-- Au moins un caractère spécial (@\$!%*?&.)""";
-    } else {
-      passwordError = null;
-    }
-    notifyListeners();
+- Au moins un caractère spécial""";
+  } else {
+    passwordError = null;
   }
+  notifyListeners();
+}
 
   bool isEnableLoginButton() {
     return emailController.text.isNotEmpty &&

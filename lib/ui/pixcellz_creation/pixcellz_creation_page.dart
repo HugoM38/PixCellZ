@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pixcellz/ui/widgets/pixcellz_appbar.dart';
+import 'package:pixcellz/utils/shared_prefs_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:pixcellz/ui/pixcellz_creation/pixel_art_viewmodel.dart';
 import 'package:pixcellz/ui/widgets/pixel_grid.dart';
@@ -18,8 +19,30 @@ class _PixCellZCreationPageState extends State<PixCellZCreationPage> {
     return ChangeNotifierProvider(
       create: (_) => PixelArtViewModel(),
       child: Scaffold(
-        appBar: const PixCellZAppBar(
+        appBar: PixCellZAppBar(
           title: "Création d'un Pixel Art",
+          actions: [
+            Consumer<PixelArtViewModel>(
+              builder: (context, viewModel, child) {
+                return IconButton(
+                  icon: const Icon(Icons.save),
+                  onPressed: () async {
+                    String? userId = await SharedPreferencesManager.getUser();
+                    String jsonData = viewModel.getPixelArtJsonString(userId!);
+                    //TODO: Send jsonData to the backend
+                    print(jsonData);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Pixel Art enregistré avec succès'),
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
+          ],
         ),
         body: SafeArea(
           child: Column(

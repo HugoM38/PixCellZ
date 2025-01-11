@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pixcellz/utils/shared_prefs_manager.dart';
 
 class PixCellZAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const PixCellZAppBar({super.key, required this.title});
+  const PixCellZAppBar({super.key, required this.title, this.actions});
 
   final String title;
+  final List<Widget>? actions;
 
   @override
   State<PixCellZAppBar> createState() => _PixCellZAppBarState();
@@ -43,6 +44,7 @@ class _PixCellZAppBarState extends State<PixCellZAppBar> {
         color: Theme.of(context).colorScheme.onPrimary,
       ),
       actions: [
+        if (widget.actions != null) ...widget.actions!,
         _isLoading
             ? CircularProgressIndicator(
                 color: Theme.of(context).colorScheme.onPrimary,

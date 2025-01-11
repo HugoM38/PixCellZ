@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class PixelArtViewModel extends ChangeNotifier {
   final List<List<Color>> pixels;
@@ -55,5 +56,27 @@ class PixelArtViewModel extends ChangeNotifier {
   void setSelectedColor(Color color) {
     _selectedColor = color;
     notifyListeners();
+  }
+
+  Map<String, dynamic> getPixelArtData(String userId) {
+    List<List<Map<String, int>>> rgbData = pixels.map((row) {
+      return row.map((color) {
+        return {
+          'r': color.red,
+          'g': color.green,
+          'b': color.blue,
+        };
+      }).toList();
+    }).toList();
+
+    return {
+      'userId': userId,
+      'creationDate': DateTime.now().millisecondsSinceEpoch,
+      'data': rgbData,
+    };
+  }
+
+  String getPixelArtJsonString(String userId) {
+    return jsonEncode(getPixelArtData(userId));
   }
 }

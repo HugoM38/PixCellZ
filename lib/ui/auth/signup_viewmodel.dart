@@ -13,7 +13,7 @@ class SignupViewModel extends ChangeNotifier {
     r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
   );
   final RegExp passwordRegex = RegExp(
-    r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$',
+    r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9])[^\s]{8,}$',
   );
 
   String? usernameError;
@@ -66,7 +66,8 @@ class SignupViewModel extends ChangeNotifier {
     if (usernameController.text.isEmpty) {
       usernameError = "Le pseudo est requis";
     } else if (!usernameRegex.hasMatch(usernameController.text)) {
-      usernameError = "Le pseudo doit contenir entre 3 et 20 caractères alphanumériques ou _";
+      usernameError =
+          "Le pseudo doit contenir entre 3 et 20 caractères alphanumériques ou _";
     } else {
       usernameError = null;
     }
@@ -97,7 +98,7 @@ class SignupViewModel extends ChangeNotifier {
 - Au moins une majuscule
 - Au moins une minuscule
 - Au moins un chiffre
-- Au moins un caractère spécial (@\$!%*?&.)""";
+- Au moins un caractère spécial""";
     } else {
       passwordError = null;
     }

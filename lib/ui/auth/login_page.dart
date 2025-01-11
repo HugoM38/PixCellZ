@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                                 errorText: viewModel.isPasswordFieldTouched
                                     ? viewModel.passwordError
                                     : null,
-                                errorMaxLines: 5,
+                                errorMaxLines: 6,
                                 filled: true,
                                 fillColor: Theme.of(context).colorScheme.secondary,
                               ),

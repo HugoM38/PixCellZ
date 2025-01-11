@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:pixcellz/services/pixcellz_service.dart';
 import 'package:pixcellz/ui/widgets/pixcellz_appbar.dart';
 import 'package:pixcellz/utils/shared_prefs_manager.dart';
 import 'package:provider/provider.dart';
@@ -27,17 +28,30 @@ class _PixCellZCreationPageState extends State<PixCellZCreationPage> {
                 return IconButton(
                   icon: const Icon(Icons.save),
                   onPressed: () async {
-                    String? userId = await SharedPreferencesManager.getUser();
-                    String jsonData = viewModel.getPixelArtJsonString(userId!);
-                    //TODO: Send jsonData to the backend
-                    print(jsonData);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Pixel Art enregistré avec succès'),
-                        ),
-                      );
-                    }
+                    String? token =
+                        await SharedPreferencesManager.getSessionToken();
+                    Map<String, dynamic> jsonData =
+                        viewModel.getPixelArtJsonString();
+                    PixCellZService()
+                        .createPixCellZ(token!, jsonData)
+                        .then((_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Pixel Art enregistré avec succès'),
+                          ),
+                        );
+                        Navigator.pop(context);
+                      }
+                    }).catchError((error) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Erreur lors de l\'enregistrement'),
+                          ),
+                        );
+                      }
+                    });
                   },
                 );
               },

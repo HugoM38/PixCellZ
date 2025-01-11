@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:pixcellz/models/auth_model.dart';
 import 'package:pixcellz/ui/auth/login_page.dart';
 import 'package:pixcellz/ui/auth/login_viewmodel.dart';
@@ -10,7 +11,8 @@ import 'package:pixcellz/ui/pixcellz_creation/pixel_art_viewmodel.dart';
 import 'package:pixcellz/utils/auth_observer.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  await initializeDateFormatting('fr_FR', null);
  runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => LoginViewModel()),

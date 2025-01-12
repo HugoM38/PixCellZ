@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pixcellz/ui/pixcellz/pixcellz_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pixcellz/ui/widgets/pixcellz_appbar.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,9 +10,78 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+class UserDrawing {
+  final String firstName;
+  final String lastName;
+  final String svgCode;
+  final String additionalInfo;
+
+  UserDrawing({
+    required this.firstName,
+    required this.lastName,
+    required this.svgCode,
+    required this.additionalInfo,
+  });
+}
+
 class _HomePageState extends State<HomePage> {
+  List<UserDrawing> mockUserDrawings = [
+    UserDrawing(
+      firstName: "Alice",
+      lastName: "Dupont",
+      svgCode: '''
+<svg width="200" height="200" viewBox="0 0 200 200"
+     xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="10" width="180" height="180" fill="#FFC0CB" stroke="blue" stroke-width="4"/>
+  <circle cx="100" cy="100" r="40" fill="#87CEFA"/>
+</svg>
+      ''',
+      additionalInfo: "Premier dessin d'Alice, couleurs pastel.",
+    ),
+    UserDrawing(
+      firstName: "Bob",
+      lastName: "Martin",
+      svgCode: '''
+<svg width="200" height="200" viewBox="0 0 200 200"
+     xmlns="http://www.w3.org/2000/svg">
+  <rect x="20" y="20" width="160" height="160" fill="#FFA07A" />
+  <line x1="20" y1="20" x2="180" y2="180" stroke="#B22222" stroke-width="5"/>
+</svg>
+      ''',
+      additionalInfo: "Bob joue avec les formes géométriques.",
+    ),
+    UserDrawing(
+      firstName: "Charlie",
+      lastName: "Doe",
+      svgCode: '''
+<svg width="200" height="200" viewBox="0 0 200 200"
+     xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="60" fill="#FFD700" />
+  <circle cx="80" cy="80" r="10" fill="#000" />
+  <circle cx="120" cy="80" r="10" fill="#000" />
+  <path d="M70,120 Q100,150 130,120" stroke="#000" fill="transparent" stroke-width="4" />
+</svg>
+      ''',
+      additionalInfo: "Charlie adore dessiner des smileys amusants.",
+    ),
+    UserDrawing(
+      firstName: "Diana",
+      lastName: "Smith",
+      svgCode: '''
+<svg width="200" height="200" viewBox="0 0 200 200"
+     xmlns="http://www.w3.org/2000/svg">
+  <polygon points="100,10 40,180 190,60 10,60 160,180" fill="#98FB98" />
+</svg>
+      ''',
+      additionalInfo: "Formes stylisées, approche artistique abstraite.",
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final int crossAxisCount = screenWidth > 600 ? 4 : 2;
+
     return Scaffold(
       appBar: PixCellZAppBar(
         title: "PixCellZ",
@@ -28,31 +98,90 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {Navigator.pushNamed(context, '/pixcellz_creation')},
+        onPressed: () {
+          Navigator.pushNamed(context, '/pixcellz_creation');
+        },
         child: const Icon(Icons.add),
       ),
-      body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.7,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.35,
-                    vertical: MediaQuery.of(context).size.height * 0.1),
-                child: Text(
-                  "Page d'accueil de PixCellZ",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            Text(
+              "Galerie de Pixel Art",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.8,
                   ),
+                  itemCount: mockUserDrawings.length,
+                  itemBuilder: (context, index) {
+                    final drawing = mockUserDrawings[index];
+                    return _buildPixelArtCard(drawing);
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPixelArtCard(UserDrawing drawing) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      elevation: 3,
+      child: Column(
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              child: SvgPicture.string(
+                drawing.svgCode,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Text(
+                  "${drawing.firstName} ${drawing.lastName}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  drawing.additionalInfo,
+                  style: const TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

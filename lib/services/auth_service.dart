@@ -4,8 +4,9 @@ import 'package:http/http.dart';
 import 'package:pixcellz/utils/shared_prefs_manager.dart';
 
 class AuthService {
+  final String api = "http://localhost:5001";
+
   Future<Response> login(String email, String password) async {
-    String api = "http://localhost:5001";
     Uri apiUrl = Uri.parse('$api/api/auth/signin');
     final response = await http.post(
       apiUrl,
@@ -33,8 +34,8 @@ class AuthService {
     return response;
   }
 
+  /// Méthode de signup
   Future<Response> signup(String username, String email, String password) async {
-    String api = "http://localhost:5001";
     Uri apiUrl = Uri.parse('$api/api/auth/signup');
     final response = await http.post(
       apiUrl,
@@ -63,5 +64,25 @@ class AuthService {
     }
 
     return response;
+  }
+
+  Future<String> fetchUsername(String token, String userId) async {
+    final apiUrl = Uri.parse('$api/api/users/$userId');
+
+    final response = await http.get(
+      apiUrl,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final userObj = data['user'];
+      return userObj['username']; // ex: "johnDoe"
+    } else {
+      throw "Impossible de récupérer le username pour userId=$userId (code=${response.statusCode})";
+    }
   }
 }

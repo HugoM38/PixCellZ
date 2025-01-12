@@ -8,6 +8,7 @@ import 'package:pixcellz/ui/auth/signup_viewmodel.dart';
 import 'package:pixcellz/ui/home/home_page.dart';
 import 'package:pixcellz/ui/pixcellz_creation/pixcellz_creation_page.dart';
 import 'package:pixcellz/ui/pixcellz_creation/pixel_art_viewmodel.dart';
+import 'package:pixcellz/ui/pixcellz_modification/pixcellz_modification_page.dart';
 import 'package:pixcellz/utils/auth_observer.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,13 @@ class PixCellZ extends StatelessWidget {
         '/signup': (context) => const SignupPage(),
         '/home': (context) => const HomePage(),
         '/pixcellz_creation': (context) => const PixCellZCreationPage(),
+    '/pixcellz_modification': (context) {
+      final drawing = ModalRoute.of(context)!.settings.arguments as UserDrawing;
+      return PixCellZModificationPage(
+        pixelData: drawing.data,
+        pixCellZId: drawing.id,
+      );
+    },
       },
       navigatorObservers: [AuthObserver()],
       theme: ThemeData(

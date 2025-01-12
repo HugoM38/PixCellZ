@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:pixcellz/ui/pixcellz_modification/pixel_art_viewmodel_modification.dart';
 
 class PixelGridModifier extends StatefulWidget {
-  const PixelGridModifier({Key? key}) : super(key: key);
+  const PixelGridModifier({super.key});
 
   @override
   State<PixelGridModifier> createState() => _PixelGridModifierState();

@@ -12,10 +12,10 @@ class PixCellZModificationPage extends StatefulWidget {
   final String pixCellZId;
 
   const PixCellZModificationPage({
-    Key? key,
+    super.key,
     required this.pixelData,
     required this.pixCellZId,
-  }) : super(key: key);
+  });
 
   @override
   State<PixCellZModificationPage> createState() =>

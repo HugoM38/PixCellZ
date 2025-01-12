@@ -2,25 +2,25 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:pixcellz/ui/home/home_page.dart';
 import 'package:pixcellz/ui/widgets/pixcellz_appbar.dart';
 import 'dart:html' as html;
 import 'dart:convert';
 
 class PixCellZPage extends StatelessWidget {
-  final Map<String, dynamic> pixCellZData;
+  final UserDrawing drawing;
 
-  const PixCellZPage({super.key, required this.pixCellZData});
+  const PixCellZPage({super.key, required this.drawing});
 
   @override
   Widget build(BuildContext context) {
-    final userId = pixCellZData['pixcell']['userId'];
+    final userId = drawing.userId;
     final creationDate = DateTime.fromMillisecondsSinceEpoch(
-      pixCellZData['pixcell']['creationDate'],
+      drawing.creationDate,
     );
     final formattedDate =
         DateFormat('dd MMMM yyyy', 'fr_FR').format(creationDate);
-    final pixelMatrix =
-        pixCellZData['pixcell']['data'] as List<List<Map<String, dynamic>>>;
+    final pixelMatrix = drawing.data;
 
     final svgContent = _generateSvg(pixelMatrix);
 
@@ -41,11 +41,11 @@ class PixCellZPage extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.account_circle, size: 32, color: primaryColor),
+                    Icon(Icons.calendar_today, size: 32, color: primaryColor),
                     const SizedBox(width: 8),
                     Text(
-                      "User ID: $userId",
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      "Créé le : $formattedDate",
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -53,11 +53,12 @@ class PixCellZPage extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Icon(Icons.calendar_today, size: 32, color: primaryColor),
+                    Icon(Icons.account_circle, size: 32, color: primaryColor),
                     const SizedBox(width: 8),
                     Text(
-                      "Créé le : $formattedDate",
-                      style: const TextStyle(fontSize: 16),
+                      "Par: ${drawing.username ?? userId}",
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -96,9 +97,9 @@ class PixCellZPage extends StatelessWidget {
     );
   }
 
-  Future<void> _generateAndSaveSvg(BuildContext context, String svgContent) async {
+  Future<void> _generateAndSaveSvg(
+      BuildContext context, String svgContent) async {
     try {
-      final encodedSvg = Uri.encodeComponent(svgContent);
       final blob = html.Blob([Uint8List.fromList(utf8.encode(svgContent))]);
       final url = html.Url.createObjectUrlFromBlob(blob);
 

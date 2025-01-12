@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 class PixCellZService {
   final String api = "http://localhost:5001";
 
-  /// Création d'un nouveau dessin
   Future<http.Response> createPixCellZ(
     String token, 
     Map<String, dynamic> data,
@@ -26,7 +25,6 @@ class PixCellZService {
     return response;
   }
 
-  /// Mise à jour d'un dessin (Pixel Art)
   Future<http.Response> updatePixCellZ(
     String pixCellZId, 
     String token, 

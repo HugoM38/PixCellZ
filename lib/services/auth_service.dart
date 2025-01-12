@@ -34,7 +34,6 @@ class AuthService {
     return response;
   }
 
-  /// Méthode de signup
   Future<Response> signup(String username, String email, String password) async {
     Uri apiUrl = Uri.parse('$api/api/auth/signup');
     final response = await http.post(
@@ -80,7 +79,7 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final userObj = data['user'];
-      return userObj['username']; // ex: "johnDoe"
+      return userObj['username'];
     } else {
       throw "Impossible de récupérer le username pour userId=$userId (code=${response.statusCode})";
     }
